@@ -42,7 +42,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addOrdersItemToDatabase = exports.addOrdersToDatabase = void 0;
+exports.updateStatus = exports.addOrdersItemToDatabase = exports.addOrdersToDatabase = void 0;
 const admin = __importStar(require("firebase-admin"));
 const db = admin.database();
 const addOrdersToDatabase = (order) => __awaiter(void 0, void 0, void 0, function* () {
@@ -57,7 +57,7 @@ const addOrdersToDatabase = (order) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.addOrdersToDatabase = addOrdersToDatabase;
 const addOrdersItemToDatabase = (item) => __awaiter(void 0, void 0, void 0, function* () {
-    const ref = db.ref("products");
+    const ref = db.ref("OrderItems");
     const newOrdersItemRef = ref.push();
     yield newOrdersItemRef.set({
         product_id: item.product_id,
@@ -69,3 +69,12 @@ const addOrdersItemToDatabase = (item) => __awaiter(void 0, void 0, void 0, func
     console.log("OrderItem added to Firebase Realtime Database");
 });
 exports.addOrdersItemToDatabase = addOrdersItemToDatabase;
+const updateStatus = (item) => __awaiter(void 0, void 0, void 0, function* () {
+    const ordersRef = db.ref("Orders");
+    const itemRef = ordersRef.child(item.id);
+    yield itemRef.update({
+        status: item.status,
+    });
+    console.log("Order status updated successfully!");
+});
+exports.updateStatus = updateStatus;

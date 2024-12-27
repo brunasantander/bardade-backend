@@ -26,4 +26,9 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.json(yield (0, product_1.getProducts)());
 }));
+router.get("/:name", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name } = req.params;
+    console.log(name);
+    res.json(yield (0, product_1.getProductsByName)({ name: name }));
+}));
 exports.default = router;

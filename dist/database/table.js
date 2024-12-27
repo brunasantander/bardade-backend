@@ -42,11 +42,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addTableToDatabase = void 0;
+exports.updateTotal = exports.addTableToDatabase = void 0;
 const admin = __importStar(require("firebase-admin"));
 const db = admin.database();
 const addTableToDatabase = (product) => __awaiter(void 0, void 0, void 0, function* () {
-    const ref = db.ref("products");
+    const ref = db.ref("Tables");
     const newTableRef = ref.push();
     yield newTableRef.set({
         number: product.number,
@@ -57,3 +57,12 @@ const addTableToDatabase = (product) => __awaiter(void 0, void 0, void 0, functi
     console.log("Table added to Firebase Realtime Database");
 });
 exports.addTableToDatabase = addTableToDatabase;
+const updateTotal = (update) => __awaiter(void 0, void 0, void 0, function* () {
+    const tablesRef = db.ref("Tables");
+    const itemRef = tablesRef.child(update.tableId);
+    yield itemRef.update({
+        total: update.total,
+    });
+    console.log("Total updated successfully");
+});
+exports.updateTotal = updateTotal;

@@ -31,16 +31,31 @@ export const addProductToDatabase = async (product: {
 };
 
 export const getProducts = async () => {
-    const products = db.ref("Products");
-    const allProducts = await products.get();
+  const productsRef = db.ref("Products");
+  
+  try {
+    const snapshot = await productsRef.get();
 
-    return allProducts;
+    if (snapshot.exists()) {
+      const productsObject = snapshot.val();
+      const productsArray = Object.keys(productsObject).map((key) => ({
+        id: key,
+        ...productsObject[key],
+      }));
+      return productsArray;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("Erro ao buscar produtos: ", error);
+    throw error;
+  }
 };
 
-export const getProductsByName = async (param: {name: string;}) => {
-    const products = db.ref("Products");
-    const query = products.orderByChild("name").equalTo(param.name);
-    const product = await query.get();
+export const getProductsByName = async (param: { name: string }) => {
+  const products = db.ref("Products");
+  const query = products.orderByChild("name").equalTo(param.name);
+  const product = await query.get();
 
-    return product;
+  return product;
 };

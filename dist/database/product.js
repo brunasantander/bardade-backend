@@ -42,8 +42,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProducts = exports.addProductToDatabase = void 0;
+exports.getProductsByName = exports.getProducts = exports.addProductToDatabase = void 0;
 const admin = __importStar(require("firebase-admin"));
+const path = __importStar(require("path"));
+const dotenv = __importStar(require("dotenv"));
+dotenv.config();
+admin.initializeApp({
+    credential: admin.credential.cert(path.resolve(__dirname, process.env.CREDENTIALS_PATH || "")),
+    databaseURL: process.env.DATABASE_URL,
+});
 const db = admin.database();
 const addProductToDatabase = (product) => __awaiter(void 0, void 0, void 0, function* () {
     const ref = db.ref("Products");
@@ -63,3 +70,10 @@ const getProducts = () => __awaiter(void 0, void 0, void 0, function* () {
     return allProducts;
 });
 exports.getProducts = getProducts;
+const getProductsByName = (param) => __awaiter(void 0, void 0, void 0, function* () {
+    const products = db.ref("Products");
+    const query = products.orderByChild("name").equalTo(param.name);
+    const product = yield query.get();
+    return product;
+});
+exports.getProductsByName = getProductsByName;
