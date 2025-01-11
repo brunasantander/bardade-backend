@@ -42,35 +42,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProductsByName = exports.getProducts = exports.addProductToDatabase = void 0;
+exports.getPayments = exports.addPayment = void 0;
 const admin = __importStar(require("firebase-admin"));
-const path = __importStar(require("path"));
-const dotenv = __importStar(require("dotenv"));
-dotenv.config();
-admin.initializeApp({
-    credential: admin.credential.cert(path.resolve(__dirname, process.env.CREDENTIALS_PATH || "")),
-    databaseURL: process.env.DATABASE_URL,
-});
 const db = admin.database();
-const addProductToDatabase = (product) => __awaiter(void 0, void 0, void 0, function* () {
-    const ref = db.ref("Products");
-    const newProductRef = ref.push();
-    yield newProductRef.set({
-        name: product.name,
-        price: product.price,
-        type: product.type,
+const addPayment = (payment) => __awaiter(void 0, void 0, void 0, function* () {
+    const ref = db.ref("Payments");
+    const newPaymentsRef = ref.push();
+    yield newPaymentsRef.set({
+        tableId: payment.tableId,
+        price: payment.price,
+        method: payment.method,
         created_at: admin.database.ServerValue.TIMESTAMP,
     });
-    console.log("Product added to Firebase Realtime Database");
+    console.log("Payment added to Firebase Realtime Database");
 });
-exports.addProductToDatabase = addProductToDatabase;
-const getProducts = () => __awaiter(void 0, void 0, void 0, function* () {
-    const productsRef = db.ref("Products");
+exports.addPayment = addPayment;
+const getPayments = () => __awaiter(void 0, void 0, void 0, function* () {
+    const paymentsRef = db.ref("Payments");
     try {
-        const snapshot = yield productsRef.get();
+        const snapshot = yield paymentsRef.get();
         if (snapshot.exists()) {
-            const productsObject = snapshot.val();
-            const productsArray = Object.keys(productsObject).map((key) => (Object.assign({ id: key }, productsObject[key])));
+            const paymentsObject = snapshot.val();
+            const productsArray = Object.keys(paymentsObject).map((key) => (Object.assign({ id: key }, paymentsObject[key])));
             return productsArray;
         }
         else {
@@ -78,15 +71,8 @@ const getProducts = () => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
-        console.error("Erro ao buscar produtos: ", error);
+        console.error("Erro ao buscar pagamentos: ", error);
         throw error;
     }
 });
-exports.getProducts = getProducts;
-const getProductsByName = (param) => __awaiter(void 0, void 0, void 0, function* () {
-    const products = db.ref("Products");
-    const query = products.orderByChild("name").equalTo(param.name);
-    const product = yield query.get();
-    return product;
-});
-exports.getProductsByName = getProductsByName;
+exports.getPayments = getPayments;

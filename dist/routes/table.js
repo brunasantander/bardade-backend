@@ -14,8 +14,8 @@ const table_1 = require("../database/table");
 const router = (0, express_1.Router)();
 router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { number, total, client } = req.body;
-        yield (0, table_1.addTableToDatabase)({ number: number, total: total, client: client });
+        const { products, tableNumber, total, tableName } = req.body;
+        yield (0, table_1.addCartToDatabase)({ products: products, tableNumber: tableNumber, total: total, client: tableName });
         res.json({ message: 'Table added to firebase successfully!' });
     }
     catch (error) {
@@ -32,6 +32,38 @@ router.put('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to update' });
+    }
+}));
+router.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const tables = yield (0, table_1.getTable)();
+        res.status(200).json(tables);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update' });
+    }
+}));
+router.get('/:tableId', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { tableId } = req.params;
+        const info = yield (0, table_1.getTableInfo)(tableId);
+        res.status(200).json(info);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to get info' });
+    }
+}));
+router.delete('/:tableId/:method', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { tableId, method } = req.params;
+        const info = yield (0, table_1.deleteTable)(tableId, method);
+        res.status(200).json(info);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete table' });
     }
 }));
 exports.default = router;

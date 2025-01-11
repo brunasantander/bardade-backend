@@ -10,30 +10,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const product_1 = require("../database/product");
+const payment_1 = require("../database/payment");
 const router = (0, express_1.Router)();
-router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, price, type } = req.body;
-        yield (0, product_1.addProductToDatabase)({ name: name, price: price, type: type });
-        res.json({ message: "Product added to firebase successfully!" });
+        const { price, method, tableId } = req.body;
+        yield (0, payment_1.addPayment)({ tableId: tableId, price: price, method: method });
+        res.json({ message: 'Payment added to firebase successfully!' });
     }
     catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Failed to add product to database" });
+        res.status(500).json({ error: 'Failed to add payment to database' });
     }
 }));
 router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const products = yield (0, product_1.getProducts)();
-        res.status(200).json(products);
+        const payments = yield (0, payment_1.getPayments)();
+        res.status(200).json(payments);
     }
     catch (error) {
-        res.status(500).json({ error: "Erro ao buscar produtos." });
+        res.status(500).json({ error: "Erro ao buscar pagamentos." });
     }
-}));
-router.get("/:name", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name } = req.params;
-    res.json(yield (0, product_1.getProductsByName)({ name: name }));
 }));
 exports.default = router;
