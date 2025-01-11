@@ -1,14 +1,12 @@
 import { Router, Request, Response } from 'express';
-import { addTableToDatabase, updateTotal } from '../database/table';
+import { addCartToDatabase, deleteTable, getTable, getTableInfo, updateTotal } from '../database/table';
 
 const router: Router = Router();
 
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { number, total, client } = req.body;
-
-    await addTableToDatabase({number: number, total: total, client: client});
-
+    const { products, tableNumber, total, tableName } = req.body;
+    await addCartToDatabase({ products: products, tableNumber: tableNumber, total: total, client: tableName });
     res.json({ message: 'Table added to firebase successfully!' });
   } catch (error) {
     console.error(error);
@@ -26,6 +24,38 @@ router.put('/', async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to update' });
+  }
+});
+
+router.get('/', async (req: Request, res: Response) => {
+  try {
+    const tables = await getTable();
+    res.status(200).json(tables);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update' });
+  }
+});
+
+router.get('/:tableId', async (req: Request, res: Response) => {
+  try {
+    const { tableId } = req.params;
+    const info = await getTableInfo(tableId);
+    res.status(200).json(info);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to get info' });
+  }
+});
+
+router.delete('/:tableId', async (req: Request, res: Response) => {
+  try {
+    const { tableId } = req.params;
+    const info = await deleteTable(tableId);
+    res.status(200).json(info);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete table' });
   }
 });
 

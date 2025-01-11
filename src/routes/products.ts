@@ -31,7 +31,6 @@ router.get("/", async (req, res) => {
 
 router.get("/:name", async (req: Request, res: Response) => {
   const { name } = req.params;
-  console.log(name);
   res.json(await getProductsByName({ name: name }));
 });
 

@@ -4,7 +4,7 @@ import { OrderStatus } from "../entities/OrderStatus";
 const db = admin.database();
 
 export const addOrdersToDatabase = async (order: {
-  status: OrderStatus;
+  status: string;
   table_id: number;
 }) => {
   const ref = db.ref("Orders");
