@@ -3,6 +3,7 @@ import { ProductType } from "../entities/ProductType";
 import { addOrdersItemToDatabase, addOrdersToDatabase } from "./order";
 import { OrderStatus } from "../entities/OrderStatus";
 import { Product } from "../entities/Product";
+import { addPayment } from "./payment";
 
 const db = admin.database();
 
@@ -224,9 +225,11 @@ export const getTableInfo = async (tableId: string) => {
   }
 };
 
-export const deleteTable = async (tableId: string) => {
+export const deleteTable = async (tableId: string, method: string) => {
   const tablesRef = db.ref("Tables");
   const itemRef = tablesRef.child(tableId);
+  const tables = await getTable();
+  const table = tables.find((t) => t.id == tableId);
 
   const OrdersRef = db.ref("Orders");
   const orderItemRef = await OrdersRef.get()
@@ -240,6 +243,7 @@ export const deleteTable = async (tableId: string) => {
     if (tablesArray.length > 0) {
       const itens = tablesArray.filter((item) => item.table_id == tableId);
       if (itens.length > 0) {
+        await addPayment({tableId: tableId, price: table.total, method: method});
         itens.forEach(async (item) => {
           const aux = OrdersRef.child(item.id);
           aux.update({

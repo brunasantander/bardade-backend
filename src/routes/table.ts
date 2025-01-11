@@ -48,10 +48,10 @@ router.get('/:tableId', async (req: Request, res: Response) => {
   }
 });
 
-router.delete('/:tableId', async (req: Request, res: Response) => {
+router.delete('/:tableId/:method', async (req: Request, res: Response) => {
   try {
-    const { tableId } = req.params;
-    const info = await deleteTable(tableId);
+    const { tableId, method } = req.params;
+    const info = await deleteTable(tableId, method);
     res.status(200).json(info);
   } catch (error) {
     console.error(error);
