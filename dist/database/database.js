@@ -33,11 +33,31 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+console.log('Iniciando execução do arquivo database.ts');
 const admin = __importStar(require("firebase-admin"));
-const path = __importStar(require("path"));
 const dotenv = __importStar(require("dotenv"));
+// Adiciona um log para verificar se o dotenv está sendo carregado
+console.log('Carregando variáveis de ambiente...');
 dotenv.config();
-admin.initializeApp({
-    credential: admin.credential.cert(path.resolve(__dirname, process.env.CREDENTIALS_PATH || "")),
-    databaseURL: process.env.DATABASE_URL,
-});
+const credentialsBase64 = process.env.CREDENTIALS_PATH;
+console.log('CREDENTIALS_PATH:', credentialsBase64); // Log da variável de ambiente
+if (credentialsBase64) {
+    try {
+        console.log('Base64 string:', credentialsBase64); // Log da string base64
+        const credentials = Buffer.from(credentialsBase64, 'base64').toString('utf-8');
+        console.log('Decoded credentials:', credentials); // Log das credenciais decodificadas
+        const credentialsJson = JSON.parse(credentials);
+        const firebaseConfig = {
+            credential: admin.credential.cert(credentialsJson),
+            databaseURL: process.env.DATABASE_URL,
+        };
+        admin.initializeApp(firebaseConfig);
+        console.log('Firebase initialized successfully');
+    }
+    catch (error) {
+        console.error('Failed to parse service account JSON file:', error);
+    }
+}
+else {
+    console.error('CREDENTIALS_PATH environment variable is not set.');
+}
